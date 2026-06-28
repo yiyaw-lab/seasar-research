@@ -87,38 +87,49 @@ That is a much smaller and much truer claim than "behavioral contracts make
 multi-agent builds better." It is also one I can stand behind, because I spent
 eight rounds trying to break it and this is what was left.
 
-## What I'm testing next (and what would prove me wrong)
+## I ran the hardening (round 9), and where I was wrong
 
-This is a lab note, not a paper. The closure result (the prompt taking failure from
-~80% to ~4%) is solid. The two claims I most want to stress before I'd defend them
-in public are the ones with small samples: that fresh eyes detect the gap about
-twice as well as self-review, and the strange dissociation where the fix doesn't
-require the awareness.
+I pre-registered a deliberate attempt to break my own conclusions: more seams, a
+weaker model, more runs, and a second judge to grade the grader. Here is what held
+and what didn't.
 
-So the next experiment is a deliberate attempt to break those, pre-registered here
-so I can't move the goalposts:
+**What held, and got sharper.** The closure effect is real. On the seams that
+actually break, the one-line "consider how this could silently fail when assembled"
+prompt takes correctness from roughly 12% to 75% on the strong model. And the
+strange part resolved into something cleaner: when I *ask* the agents to list failure
+modes, they name the exact missing requirement about 100% of the time, with two
+judges agreeing 98% of the time, even though, left alone, they break. They already
+know the requirement. They just don't look unless told to. So it is not that they
+can't see the gap. It is where their attention goes. That is a tighter and truer
+claim than I started with: an attention problem, not a blindness problem.
 
-- **More seams, different traps.** Six or more under-specified seams, each with a
-  different "best practice" an agent might wrongly import, not just the one git
-  convention. If the dissociation only shows up for staging, it isn't real.
-- **Enough runs to trust the gap.** Twenty-plus runs per condition with confidence
-  intervals. Right now the self-versus-external detection numbers are too noisy to
-  bet on; one model was a wash.
-- **A scorer I can check.** A human-validated subset plus a second independent
-  judge, so the detection rates aren't one model grading another unaudited.
-- **Find the floor.** A weaker, older model than the three here, to locate the
-  point where a one-line attention prompt stops being enough. That floor is the
-  real product-relevant number: below it you need the external gates, above it you
-  may not.
+**What I got wrong.** Two things from the lab note did not survive more data.
 
-My prediction: the closure effect holds everywhere, the dissociation holds across
-most seams, and there is a capability floor below which priming alone fails. If the
-dissociation evaporates once I widen it, I'll say so here too. The whole point of
-doing it this way is that the result is allowed to disappoint me.
+- "Fresh eyes catch it twice as well as self-review" evaporated. At higher n with
+  two judges, self-review and an outside reviewer both name the gap about 100% of
+  the time. The 2x gap was a small-sample, single-seam artifact. Retracted.
+- "A one-line prompt fixes it" needs two asterisks. It works far better on the
+  strong model than the weak one (about 75% versus 44% rescue), and some conventions
+  are sticky: caching staleness only half-closes even when primed. Cheap and
+  powerful, but bounded by model strength and how reflexive the bad habit is.
+
+And an honest miss: of four new traps I built, two didn't trip at all. The agents
+just did the right thing by default. Making a coding agent reliably fall into a
+silent integration bug is harder than it sounds, which is itself worth knowing.
+
+**What it means.** Prevent these cheaply by directing the builder's attention with a
+prompt, and back it with executable tests for the cases the prompt misses: weaker
+models, sticky conventions, and the runs where nobody thinks to prompt. The external
+value is not fresh eyes, they are no better. It is a gate that fires whether or not
+anyone was paying attention.
 
 ---
 
-*Method, raw data, and every built artifact are at github.com/yiyaw-lab/seasar-research. The whole thing was
-run with Claude (Opus, Sonnet, Haiku as builders, Sonnet as judge), n=5 to 6 per
-condition. It is a lab note, not a paper yet. The next version widens it to more
-seams, more runs, and a human-checked scorer.*
+*Method, raw data, and every built artifact are at github.com/yiyaw-lab/seasar-research.
+Run with Claude (Opus, Sonnet, Haiku as builders; Opus and Sonnet as the two judges).
+Round 9 used n=8 per closure cell and n=12 per detection cell, with Wilson confidence
+intervals and two-judge agreement. It is now a hardened lab note / extended abstract,
+not yet a full paper: three reliably-breaking seams, single-module isolation, and an
+LLM (not human-validated) judge are the main limits. The next step to a full paper is
+more breaking seams, n above 30, a human-checked judge subset, and an older/smaller
+model to pin the capability floor.*
