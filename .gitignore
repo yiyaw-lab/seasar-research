@@ -1,0 +1,4 @@
+node_modules
+dist/
+*.log
+tsc_err.txt

@@ -1,0 +1,39 @@
+{
+  "experiment": "behavioral-contract vs types-only, parallel multi-agent build of one codebase",
+  "date": "2026-06-26",
+  "order": "Quietkeep (order-5481f8, 87/B)",
+  "builder_model": "claude-opus-4-8[1m]",
+  "n_agents_per_arm": 6,
+  "independent_variable": "Arm A agents received BEHAVIOR.md (seam-ownership + runtime semantics); Arm B received types-only. Both received identical SPEC.md + constitution + shared types.ts.",
+  "probe_results": {
+    "armA": {
+      "P0_happy_path":   { "pass": true,  "committed": true,  "delta": 1, "source": "template" },
+      "P1_redaction":    { "pass": true,  "llmExercised": true, "leaked": false, "committed": true },
+      "P2_offline_gating": { "pass": true, "calls": 0, "source": "template", "committed": true },
+      "P5_merge_pause":  { "pass": true,  "committed": false, "delta": 0, "reason": "repo-busy" },
+      "P6_hook_failure": { "pass": true,  "committed": false, "delta": 0, "hookOutputSurfaced": true, "reason": "hook-failed" },
+      "score": "5/5 genuine"
+    },
+    "armB": {
+      "P0_happy_path":   { "pass": false, "committed": false, "delta": 0, "note": "committer gates staging on autoAdd (default false) -> stages nothing -> refuses 'nothing staged'" },
+      "P1_redaction":    { "pass": false, "llmExercised": true, "leaked": true, "note": "secret reached LLM prompt verbatim" },
+      "P2_offline_gating": { "pass": true, "calls": 0, "source": "template", "committed": false },
+      "P5_merge_pause":  { "pass": true,  "committed": false, "delta": 0, "note": "guarded (in fact triple-guarded)" },
+      "P6_hook_failure": { "pass": true,  "committed": false, "delta": 0, "hookOutputSurfaced": false, "note": "VACUOUS pass: hook never ran; commit refused earlier by the staging break (cascade from P0)" },
+      "score": "2 genuine pass (P2,P5); 2 hard fail (P0,P1); 1 vacuous pass (P6)"
+    }
+  },
+  "redaction_stress_8_formats": {
+    "armA": { "leaked": 0, "of": 8, "leaks": [] },
+    "armB": { "leaked": 3, "of": 8, "leaks": ["openai_proj (sk-proj-)", "jwt", "generic_hex_40+"] }
+  },
+  "ownership_divergence": {
+    "redaction": { "armA": "messager only (daemon passes raw, single owner)", "armB": "DUPLICATED: daemon AND messager both redact, each citing the other as harmless backstop" },
+    "merge_pause_guard": { "armA": "committer authoritative + daemon early + approval defensive", "armB": "TRIPLICATED: daemon (x2 checks) + committer + approval" },
+    "staging": { "armA": "committer stages draft.files unconditionally (git add -A -- <files>)", "armB": "committer stages only if config.autoAdd (default false) -> no-op" }
+  },
+  "proximate_causes": {
+    "P1_leak": "Both Arm B redactors use sk-[A-Za-z0-9]{16,} (hyphen NOT in char class) and lack JWT + generic-blob rules. Arm A uses sk-[A-Za-z0-9_\\-]{16,} (hyphen IN class) + JWT rule + 40+ char blob catch-all.",
+    "P0_nocommit": "Arm B committer: `if (config.autoAdd && draft.files.length) git add ...` else stage nothing, then `git diff --cached --quiet` -> refuse if empty. autoAdd defaults false; probes never pre-stage -> always refuses."
+  }
+}
