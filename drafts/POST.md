@@ -118,7 +118,7 @@ doing it this way is that the result is allowed to disappoint me.
 
 ---
 
-*Method, raw data, and every built artifact are in the repo. The whole thing was
+*Method, raw data, and every built artifact are at github.com/yiyaw-lab/seasar-research The whole thing was
 run with Claude (Opus, Sonnet, Haiku as builders, Sonnet as judge), n=5 to 6 per
 condition. It is a lab note, not a paper yet. The next version widens it to more
 seams, more runs, and a human-checked scorer.*
