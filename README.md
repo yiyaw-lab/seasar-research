@@ -12,15 +12,18 @@ richer inter-agent *contracts* — actually prevents the failures it targets. Ac
 narrower, ending somewhere more useful, and survived a deliberate attempt to break
 it (round 9).
 
-**Headline finding.** The dominant silent-integration failure we could construct is
-an **attention-allocation failure, not a coordination problem**. At baseline an agent
-applies a reflexive convention that breaks an unstated-but-obvious requirement; yet
-when *asked* to enumerate failure modes it names that exact requirement **~100%** of
-the time (two-judge consensus, 98% agreement). The knowledge is present; the
-attention is not. A one-line prompt directing attention to end-to-end failure modes
-takes correctness from **~12% to ~75%** on breaking seams for a strong model —
-**bounded**: it rescues a weaker model only ~44% (a capability floor), and some
-conventions are sticky (caching half-closes even when primed).
+**Headline finding** (420-build pre-registered ablation, Wilson CIs). The dominant
+silent-integration failure we could construct is an **attention-allocation failure,
+not a coordination problem**. Agents *know* the requirement — asked to enumerate
+failure modes they name it at ceiling (self 24/24, external 23/24; two judges, 98%
+agreement; manual audit 48/48) — but break unprompted. The fix is **directing
+attention**, and it is *specifically* integration-direction, not generic effort:
+pooled over four breaking seams a strong builder is correct **23%** at baseline,
+**45%** under a generic "review for bugs" nudge, and **83%** under "consider how this
+could silently fail when assembled" (integration vs generic CIs do not overlap). Two
+hard bounds: a **steep capability floor** (the same prompt lifts Opus 23→83% but only
+Sonnet 15→27%, Haiku 0→15%) and **sticky conventions** (a "cache for performance"
+habit resists every prompt: 5/15 even primed).
 
 This reframes "multi-agent coordination tooling": **prevention is a cheap
 builder-side prompt; the durable external artifact is an executable gate** that fires
@@ -35,6 +38,7 @@ review are not the lever.
 7. **Competence trap** — one seam broke *more* on stronger models, but it failed to replicate: a symptom of an *unstated positive requirement*, not a capability law. [findings/07-competence-trap.md](findings/07-competence-trap.md)
 8. **Blind-spot study** — the attention result, a self-vs-external detection asymmetry, and a prevention/detection dissociation (n=5). [findings/08-blindspot.md](findings/08-blindspot.md)
 9. **Hardening** — the core held and sharpened (attention-allocation); two round-8 sub-claims did **not** survive. [findings/09-round9.md](findings/09-round9.md)
+10. **Full-paper grid** — the mechanism ablation (integration-direction ≫ generic effort) + a steep capability floor, 5 breaking seams, CIs. [findings/10-fullpaper-grid.md](findings/10-fullpaper-grid.md)
 
 ### Read
 - Narrative: [drafts/POST.md](drafts/POST.md)

@@ -1,118 +1,139 @@
-# Attention, not coordination: silent integration failures in parallel multi-agent code generation are an attention-allocation failure a prompt removes
+# Directed attention, not coordination: a prompt that points an LLM coder at integration removes most silent integration failures — bounded by a steep capability floor
 
-*Working paper / extended abstract (v2, hardened by round 9). See Limitations for n.
-Builders: Claude Opus 4.8, Sonnet 4.6, Haiku 4.5. Judges: Opus 4.8 + Sonnet 4.6.
-Author: [you].*
+*Working paper (v3, full-paper grid). Builders: Claude Opus 4.8 / Sonnet 4.6 /
+Haiku 4.5. Judges: Opus 4.8 + Sonnet 4.6. Author: [you].*
 
 ## Abstract
 
-When N LLM agents build one codebase in parallel, a class of failures slips past
-type checks and review: the system compiles but is silently wrong end-to-end because
-a *positive* cross-module requirement was never stated and an agent's reflexive
-default violates it. The standard prescription is richer inter-agent *contracts*.
-Across nine controlled rounds (~600 agent-built modules) we find contracts are mostly
-redundant — what matters is whether the positive requirement is stated — and, more
-sharply, that the failure is **an attention-allocation failure, not a capability,
-knowledge, or coordination problem**. At baseline, agents apply a convention that
-breaks an unstated-but-obvious requirement; yet when *asked to enumerate* failure
-modes they name that exact requirement **~100%** of the time (two-judge consensus,
-98% agreement). A one-line prompt directing attention to end-to-end failure modes
-takes correctness from **~12% to ~75%** on breaking seams for a strong model. Two
-bounds: the fix has a **capability floor** (weaker model rescued ~44%) and a
-**sticky-convention ceiling** (caching half-closes). A self-vs-external detection
-asymmetry seen at n=5 in an earlier round **did not replicate** (both ~ceiling). The
-lever is directing builder attention and backing it with executable gates — not
-contracts, not "fresh eyes."
+When LLM agents build modules of one system independently, a class of failures
+slips past type checks and review: the assembly compiles but is silently wrong
+end-to-end, because an agent applied a reflexive convention that violates a
+*positive* requirement no spec stated. The standard prescription is richer
+inter-agent contracts. Across ten controlled rounds (~1000 agent-built modules) we
+find contracts mostly redundant, and the failure better explained as an
+**attention-allocation** problem. In a pre-registered ablation over four breaking
+seams (n=15/cell, Wilson CIs), a strong builder is correct **23%** at baseline,
+**45%** under a generic "review for bugs" nudge, and **83%** under an
+integration-directed nudge ("consider how this could silently fail when assembled")
+— integration vs generic CIs do not overlap (72–91% vs 33–58%). So generic
+reflection helps, but **directing attention at integration specifically is the
+dominant lever**, not more compute. The effect has a **steep capability floor**:
+the same prompt lifts Opus 23→83% but only Sonnet 15→27% and Haiku 0→15%. And it is
+**convention-dependent**: it fully closes three seams (15/15 each) but a "cache for
+performance" habit resists every prompt (5/15 even primed). Detection is not the
+bottleneck — asked to enumerate failure modes, agents name the exact requirement at
+ceiling (self 24/24, external 23/24; two judges, 98% agreement; manual audit 48/48).
+The lever is directing builder attention, backed by executable gates where the
+prompt fails: weaker models, sticky conventions, and unprompted runs.
 
 ## 1. Setup
 
-Small hermetic systems where one or more agents implement a module against shared
-types, then the assembly is exercised by a runtime probe checking an end-to-end
-property. Each probe is validated before any agent runs (a golden reference passes, a
-broken one fails). The under-specified seams follow an *affordance pattern*: the spec
-exposes a config knob (e.g. `pageSize`, `cacheTtlMs`, git's `autoAdd`) that invites a
-reflexive best-practice which violates an unstated-but-obvious requirement.
+Small hermetic systems: one agent implements a module against shared types; the
+assembly is exercised by a runtime probe checking an end-to-end property. Every
+probe is validated before any agent runs (a golden reference passes, a broken one
+fails). Under-specified seams follow an *affordance pattern*: the spec exposes a
+config knob (`pageSize`, `cacheTtlMs`, `maxRetries`, `debounceMs`, git's `autoAdd`)
+that invites a reflexive best-practice which violates an unstated-but-obvious
+requirement. Reliable-breaking seams are hard to construct: of ~10 candidates, five
+break (staging, pagination, caching, retry, debounce); five do not (agents default
+correctly) — itself a finding about how often the failure actually fires.
 
-## 2. What does not matter (rounds 1–7, summarized)
+## 2. What does not matter (rounds 1–7)
 
-Behavioral/ownership contracts looked decisive in a pilot but the effect was an
+Behavioral/ownership contracts looked decisive in a pilot but the win was an
 apparatus artifact; de-biased and replicated across domains, types-only agents
-*derive* the correct design whenever the stated requirement determines it. One seam
-broke more on stronger models (they import a real convention) — a "competence trap" —
-but it failed to replicate when the positive requirement was stated. The durable
-through-line: silent integration failures come from *unstated positive requirements*.
+*derive* the correct design whenever the stated requirement determines it. A
+"competence trap" (stronger models break more by importing a real convention)
+failed to replicate once the positive requirement was stated. Through-line: silent
+integration failures come from *unstated positive requirements*.
 
-## 3. The attention finding (rounds 8–9)
+## 3. The mechanism ablation (the central result)
 
-On the seams that reliably break (staging, pagination, caching):
+Four breaking seams (pagination, caching, retry, debounce), Opus, n=15/cell, three
+prompt conditions. Correct end-to-end (95% Wilson CI):
 
-**Closure** (correct end-to-end; baseline → integration-primed):
+| seam | baseline | generic-effort | integration-directed |
+|---|---|---|---|
+| pagination | 8/15 | 13/15 | 15/15 |
+| caching | 3/15 | 4/15 | 5/15 |
+| retry | 1/15 | 4/15 | 15/15 |
+| debounce | 2/15 | 6/15 | 15/15 |
+| **pooled** | **14/60 (14–35%)** | **27/60 (33–58%)** | **50/60 (72–91%)** |
 
-| seam | Opus | Haiku |
-|---|---|---|
-| pagination | 2/8 → 8/8 | 1/8 → 5/8 |
-| caching | 0/8 → 4/8 | 0/8 → 2/8 |
-| staging | 1/5 → 5/5 | (no break) |
+Generic reflection beats baseline (23→45%), but integration-directed attention beats
+generic with non-overlapping CIs (45→83%). The deficit is *where attention is
+allocated*, not how much reasoning is spent.
 
-Pooled breaking-seams: Opus **2/16 → 12/16 (~75%)**, Haiku **1/16 → 7/16 (~44%)**.
+## 4. A steep capability floor
 
-**Detection** (named the requirement when asked; two-judge consensus, n=12/cell):
-self **24/24 (~100%)**, external **23/24 (~96%)**, inter-judge agreement **98%**.
+Same four seams, baseline → integration-directed, pooled (n=60/cell):
 
-**The dissociation, correctly stated.** At baseline the agents break (apply the
-convention); asked to enumerate, they name the requirement ~100%. The knowledge is
-present; the attention is not. Directing attention (a prompt) makes them both surface
-it and fix it. This is an attention-allocation failure — not detection-blindness
-(an earlier round's framing), not capability, not knowledge.
+| model | baseline | integration | lift |
+|---|---|---|---|
+| Opus 4.8 | 23% | **83%** | +60 |
+| Sonnet 4.6 | 15% | 27% | +12 |
+| Haiku 4.5 | 0% | 15% | +15 |
 
-## 4. Bounds (round 9)
+Directing attention only works if the model is capable enough to *act* on the
+direction. Below the frontier the prompt largely fails — the product-relevant
+number: that is exactly where an external gate, not a prompt, is required.
 
-- **Capability floor in the fix:** priming rescues Opus (~75%) far better than Haiku
-  (~44%). The nudge degrades with model strength.
-- **Sticky-convention ceiling:** caching recovers only 4/8 even primed; pagination
-  closes fully. The prompt is not a panacea.
-- **Retraction:** the self-vs-external detection asymmetry (53% vs 27%, n=5, one
-  judge) did not replicate; both detect at ceiling.
-- **Negative:** 2 of 4 new affordance-seams did not break (agents defaulted
-  correctly). Reliable-breaking under-specified seams are hard to construct.
+## 5. Detection is not the bottleneck (and the dissociation)
 
-## 5. Discussion
+On pagination and caching (n=12/cell, two judges, 98% agreement; manual
+keyword-and-read audit: target present in 48/48 enumerations): when *asked* to
+enumerate failure modes, agents name the requirement at ceiling — **self 24/24,
+external 23/24**. So at baseline they break while knowing the requirement; the gap is
+attention-allocation, not detection-blindness, and not a self-vs-external asymmetry
+(an n=5 earlier result that did not replicate).
 
-The "self-reflection vs external verification" debate for agentic systems is usually
-posed as reflection helping or not. Our data give a sharper account: the relevant
-deficit is not the agent's ability to *detect* a gap (near-ceiling when asked) but
-its allocation of *attention* to integration when generating. A generic attention
-nudge closes the dominant failure class cheaply, bounded by model capability and
-convention stickiness. For tooling: prevention is a builder-side prompt; the durable
-external artifact is an **executable gate** that fires whether or not attention was
-directed — the backstop for weak models, sticky conventions, and the runs where no
-one thinks to prompt. Inter-agent contracts and "fresh-eyes" review are not where the
-value is.
+## 6. Convention-dependence
 
-## 6. Limitations
+Integration-directed attention fully closes pagination, retry, and debounce (15/15
+each on Opus) but barely moves caching (5/15). The "cache for performance, forget
+invalidation" habit resists every prompt. Some conventions are sticky enough that
+attention alone never suffices.
 
-Three reliably-breaking seams; two constructed seams did not break. Closure n=8/cell,
-detection n=12/cell; Opus/Sonnet/Haiku (Haiku = weakest model the harness reaches; an
-older/OSS floor untested). Single-module isolation for the headline seams. Judges are
-LLMs (98% agreement, not human-validated at scale). Extended abstract, not a full
-empirical paper.
+## 7. Discussion
 
-## 7. What would make it a full paper
+The agentic-systems literature debates whether self-reflection helps. Our data give
+a sharper account: the deficit is not detection (near-ceiling when asked) nor raw
+reasoning (generic effort helps only modestly) but *attention allocation* to
+integration, which a targeted prompt fixes — bounded by a steep capability floor and
+by convention stickiness. For tooling: prevention is a builder-side, integration-
+directed prompt; the durable external artifact is an **executable gate** that fires
+whether or not attention was directed — the backstop for weaker models, sticky
+conventions, and runs where no one prompts. Inter-agent contracts and "fresh-eyes"
+review are not the lever.
 
-More reliably-breaking seams (harder to construct than expected — a finding in
-itself); n≥30 with pre-registered analysis; a human-validated judge subset; full-build
-(not isolation) replication; an older/smaller model to locate the capability floor
-precisely; and an ablation separating "attention prompt" from "self-revision."
+## 8. Limitations
 
-## 8. Conclusion
+Five breaking seams; single-module isolation for the grid; n=15/cell (pooled n=60);
+Opus/Sonnet/Haiku (Haiku = weakest model the harness reaches; an older/OSS floor
+untested). Detection at scale ran on two seams (the retry/debounce detection batch
+hit an API budget limit and is unrun). Judges are LLMs, corroborated by a manual
+audit (48/48) and 98% inter-judge agreement, but not human-validated at scale.
+Effects are large and CI-separated where claimed; the capability floor and
+convention-stickiness are the most novel and should be replicated on more models
+and seams.
 
-In parallel multi-agent code generation, the dominant silent-integration failure we
-could construct is an attention-allocation failure: agents know the requirement but
-don't deploy it unprompted. A one-line prompt closes it — strongly for capable models
-and loose conventions, partially otherwise. Direct builder attention; back it with
-executable gates. Contracts and fresh-eyes review are not the lever.
+## 9. What would finish the paper
+
+Detection across all five seams; n≥30 with a pre-registered analysis plan; a
+human-validated judge subset; full-build (not isolation) replication; an older/OSS
+model to locate the floor precisely; and a separate decision-theoretic estimate of
+when a gate beats a prompt (a function of model strength × convention stickiness ×
+how often the seam is hit).
+
+## 10. Conclusion
+
+The dominant silent-integration failure we could construct is an attention-allocation
+failure: agents know the requirement but do not deploy it unprompted. An
+integration-directed prompt removes most of it on a strong model and beats a generic
+effort nudge with separated CIs — but degrades sharply with model capability and
+fails on sticky conventions. Direct builder attention; back it with executable gates
+where the prompt cannot reach.
 
 ## Artifacts
 
-Method, raw per-trial data, self-tested harnesses, and built modules:
-github.com/yiyaw-lab/seasar-research.
+Method, raw per-trial data, self-tested harnesses: github.com/yiyaw-lab/seasar-research.
