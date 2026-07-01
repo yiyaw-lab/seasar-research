@@ -1,8 +1,8 @@
-# The problem with a fleet of AI agents isn't that they collide
+# Attention, Not Intelligence
 
-*Each one does something sensible at its own desk that turns out wrong where the work
-joins up, and it could have told you so in advance. I went looking for research on how
-to prevent that, found little that fit, and ran my own in the open.*
+*My AI agents reached for the wrong answer while knowing the right one, until I told
+them where to look. What a swarm of them taught me about attention, and about the blind
+spot they inherited from us.*
 
 We are about to hand a great deal of work to autonomous software. Not one assistant
 answering one question, but fleets of AI agents working in parallel, each taking a
@@ -93,6 +93,17 @@ was present and sitting idle. What was missing was the cue that would send atten
 the seam. That reading told me the fix would not be more capability or more
 communication between agents. It would be a prompt that points.
 
+There is something worth pausing on there. Production deficiency and inattentional
+blindness were found in people, decades before any of this. The models are trained on
+us, and they appear to have inherited more than our knowledge; they inherited the habit
+of holding a fact and never consulting it. I had reached for cognitive science to
+explain the agents, and the agents were handing the explanation back in a form my own
+field almost never gets: a blind spot I could open and close on command, across
+hundreds of trials, with one line of text as the only thing that changed. You cannot
+run that experiment cleanly on a person. You can run it on a swarm of agents all
+afternoon, and what it shows you is as much about the people who supervise them as
+about the software.
+
 ## The fix, and its price
 
 If the failure is a missing cue, the remedy is to supply one. I added a single line to
@@ -147,15 +158,22 @@ resting on experiments I published and tried to break.
 
 ## What it comes down to
 
-Underneath the specifics is a claim I would make to someone who has never written a
-line of code. The agents in these experiments were not short on intelligence. They
-could state the right answer on request and then fail to use it, which is a very human
-way to fail. What they were short on was verification: something to send attention to
-the place things go wrong, and something to check the result instead of trusting the
-account of it. That is the scarce ingredient as we hand more to autonomous systems, and
-it holds for the people meant to supervise the agents as much as for the agents. It is
-why I ran this in the open and spent as long trying to sink my own tool as to defend
-it. If the work cannot prove itself, it does not count as done.
+The surprise in all of this was never about intelligence. The agents had plenty of it.
+They could state the right answer on request and then reach straight past it, which is
+about the most human way there is to fail. What decided the outcome was attention:
+where it landed, and whether anything sent it to the right place. Attention is also the
+part you cannot trust, in a machine or in a person. It wanders. It settles on the room
+and not the seam. That is why the lasting half of the method is not a better
+instruction but a check, an executable gate that looks whether or not anyone remembered
+to.
+
+It is the same blind spot that undoes any group of people who each know their own part
+and assume the parts will add up. As we route more work to systems like these, what
+runs short is not model intelligence but the willingness to aim attention at where
+things go wrong and to verify the result rather than the account of it. That holds for
+the agents and for the humans meant to watch them. It is why I ran this in the open and
+spent as long trying to sink my own tool as to defend it. If the work cannot prove
+itself, it does not count as done.
 
 ---
 
