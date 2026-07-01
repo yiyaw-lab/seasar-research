@@ -157,6 +157,16 @@ as the backstop for the weak models, the stubborn conventions, and the runs wher
 thinks to prompt. It is a lighter method than the one I set out to build, and its
 advantage is that it rests on experiments I published and tried to break.
 
+That method is really a set of bets, and I would rather write them down before I test
+them than after. The strongest one comes straight from the finding that the agents can
+already name the failure on request: if that step is reliable, I should be able to skip
+the fragile one and compile their own enumeration directly into the gate. If it works,
+it closes the cases the cue cannot reach, the stubborn caching habit and the weaker
+models, and the prompt drops from mechanism to convenience. The coming rounds test that,
+along with a hunch that a cue aimed at the specific bad habit beats the general one, and
+a small Claude model I could not run the first time. I will report how the bets scored,
+the misses included.
+
 ## What it comes down to
 
 The surprise in all of this was never about intelligence. The agents had plenty of it.

@@ -176,7 +176,8 @@ sticky conventions, and runs where no one prompts. Inter-agent contracts and
 Five breaking seams; the ablation grid is single-module, with full-pipeline
 replication now on four seams (§5). n=30/cell (ablation), n=15/arm (pipeline),
 n=12/cell (single-shot control and detection). The agentic capability ladder is
-Opus 4.8 / Sonnet 4.6 / Haiku 4.5 (Fable 5 unavailable). The single-shot apparatus
+Opus 4.8 / Sonnet 4.6 / Haiku 4.5 (Fable 5 unavailable at the time; now available and
+slated for the next round, §10). The single-shot apparatus
 control (§5.1) shows the effect is agentic-specific and leaves **cross-family
 transfer untested** — the raw-API GPT-5/Grok/Sonnet-5 nulls are apparatus-confounded
 (the same-model Opus control flattens identically), not a model-family result, so we
@@ -187,16 +188,42 @@ validation is not human-confirmed at scale. Effects are large and CI-separated w
 claimed; apparatus-dependence and cross-family transfer are now the central open
 items.
 
-## 10. What would extend it
+## 10. What would extend it — registered predictions
 
-An **agentic non-Claude harness** (a raw-API tool-use loop giving GPT-5/Grok/others
-the same read-spec/write-module posture) to test cross-family transfer cleanly — the
-top priority, since §5.1 leaves it the central open question and single-shot cannot
-answer it. Scoring the prepared human-judge sheet. More reliably-breaking seams
-(harder to construct than expected). An older/OSS model to locate the agentic
-capability floor below Haiku. And a decision-theoretic estimate of when a gate beats a
-prompt (model strength × convention stickiness × how often the seam is hit ×
-apparatus).
+The mechanism (reliable detection, unreliable deployment) makes several predictions,
+registered here before the next round runs so the follow-up can grade them:
+
+1. **Elicit-then-gate beats the cue where the cue fails.** Compiling a builder's own
+up-front enumeration of its module's integration failure modes into an executable
+end-to-end gate should close the cases the build-time cue cannot: caching (47% under the
+cue) and the weak-model floor (Haiku 9%). If so, the durable mechanism is the gate and
+the cue is a convenience.
+
+2. **A convention-specific counter-cue beats the generic integration cue on sticky
+seams.** Caching holds at 47% under the generic cue; a cue matched to the reflex
+("reflect the current store on every read; do not cache") should close it substantially
+further. Stickiness is a specific reflex, not general inattention.
+
+3. **Integration-targeted self-critique beats generic self-refine.** Generic effort
+(44%) underperformed the integration cue (82%); a self-critique pass aimed specifically
+at assembly-time failure should outperform the generic reflection of the
+Reflexion/Self-Refine line, and more so inside the agentic loop where the effect lives.
+
+4. **Two failure types, two levers.** Single-agent reflexive-convention failures yield
+to the cue; no-owner diffusion failures (the n=1 behavioral-contract signal, §2) should
+need explicit ownership assignment, not a cue. We predict the cue does not rescue
+diffusion failures.
+
+5. **The cue's lift decays with model capability; the gate's does not.** As baseline
+correctness rises on stronger models, the cue's marginal lift shrinks, while sticky
+conventions and the use of cheap models in fleets keep the gate necessary.
+
+Independent of these: the **agentic non-Claude harness** (a raw-API tool-use loop) to
+settle cross-family transfer (§5.1); scoring the prepared human-judge sheet; more
+reliably-breaking seams; and **Claude Fable 5**, unavailable during these runs but
+available now, as a fourth agentic capability-ladder point (subject to its lower rate
+limit). A decision-theoretic estimate of when a gate beats a prompt (model strength ×
+convention stickiness × seam frequency × apparatus) follows from predictions 1 and 5.
 
 ## 11. Conclusion
 
