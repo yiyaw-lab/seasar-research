@@ -76,10 +76,11 @@ model to pin the capability floor; an attention-prompt-vs-self-revision ablation
 
 ## Reproduce
 
-Apparatus (TypeScript modules + probe harnesses, each self-tested with a
-golden/broken reference before any agent ran) and per-trial data are in this repo.
-Aggregated data in [data/](data/). Builders: Claude Opus 4.8 / Sonnet 4.6 / Haiku
-4.5; judges: Opus 4.8 + Sonnet 4.6.
+Per-trial data for every round is in [data/](data/); the apparatus and method are
+documented in the findings and the working paper. The generated modules and probe
+harnesses (each self-tested with a golden/broken reference before any agent ran) are
+not checked in here. Builders: Claude Opus 4.8 / Sonnet 4.6 / Haiku 4.5; judges: Opus
+4.8 + Sonnet 4.6.
 
 ## License
 [MIT](LICENSE). Please cite the preprint if you build on this.

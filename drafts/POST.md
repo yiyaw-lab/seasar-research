@@ -39,8 +39,8 @@ half a generation old.
 
 Cognitive science, though, had a name for what the engineering literature was missing,
 which is a large part of why I went into these experiments looking for an attention
-problem rather than a coordination one. So I ran them, and kept the whole
-record in a public repository as I went.
+problem rather than a coordination one. So I ran them, and kept the results in a public
+repository as I went.
 
 ## The setup
 
@@ -116,7 +116,8 @@ bugs helped far less, reaching about 44 percent. Telling an agent to try harder 
 the same as telling it where to look, and only the second closed the gap. When I
 rebuilt the test as a real multi-agent pipeline, three separate agents building one
 system that was then assembled and tested, the pattern survived: broken every time
-without the cue, mostly repaired with it.
+without the cue, and closed by it completely in some pipelines and only partway in
+others.
 
 None of this is a spell, and the places it fails are the reason the story does not end
 here. The cue only helps a model strong enough to act on it; the sentence that lifts a
@@ -146,15 +147,15 @@ prompt for it.
 ## What the research made the method
 
 The experiments changed what the tool is for. I started out believing that agent
-behavioral contracts were what kept a fleet from colliding. The evidence handed me
-something cheaper and more durable. As Seasar works now, the method has three parts. It
-keeps the agents in the step-by-step building setting where the effect is real, rather
-than asking for finished code in one pass. It attaches one integration-directed cue to
-each agent's task, aimed at the boundary where its work meets the rest. And it writes
-executable gates into the build that verify end-to-end behavior on their own, to cover
-the weak models, the stubborn conventions, and the runs where no one thinks to prompt.
-It is a lighter tool than the one I set out to build, and it has the advantage of
-resting on experiments I published and tried to break.
+behavioral contracts were what kept a fleet from colliding, and I built Seasar around
+them. The evidence pointed somewhere cheaper and more durable, and that is the direction
+the method now takes. Three parts. Keep the agents in the step-by-step building setting
+where the effect is real, rather than asking for finished code in one pass. Attach one
+integration-directed cue to each agent's task, aimed at the boundary where its work
+meets the rest. And write executable gates into the build to check end-to-end behavior,
+as the backstop for the weak models, the stubborn conventions, and the runs where no one
+thinks to prompt. It is a lighter method than the one I set out to build, and its
+advantage is that it rests on experiments I published and tried to break.
 
 ## What it comes down to
 
@@ -177,7 +178,7 @@ itself, it does not count as done.
 
 ---
 
-*Method, raw per-trial data, and every built artifact are open at
+*Per-trial data, the findings, and the working paper are open at
 github.com/yiyaw-lab/seasar-research. The experiments used several models as agentic
 builders (Claude Opus, Sonnet, Haiku) with two of them as independent judges, plus a
 single-response control across model families (Opus, Sonnet 5, GPT-5, Grok). The
