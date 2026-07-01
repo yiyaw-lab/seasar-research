@@ -1,150 +1,165 @@
-# I tried to prove my AI-orchestration tool was grounded in research. It mostly wasn't. Here's what I found instead.
+# The problem with a fleet of AI agents isn't that they collide
 
-I run a small agent lab. One of the things I build there, Seasar, takes an idea
-and compiles it into a "build order" for a fleet of coding agents working in
-parallel: a task graph, typed interface contracts between the modules, and quality
-gates. The pitch was that the contracts are what let many agents build one codebase
-without silently stepping on each other.
+*Each one quietly does something reasonable and wrong — and knew better the whole
+time. I couldn't find research that told me how to stop it, so I ran the experiments
+in the open. Here is what survived, and what it proved about building software with
+autonomous agents.*
 
-I wanted to know if that pitch was true, or if I was building on vibes. So instead
-of guessing, I ran the experiment. Several, actually. About 330 agent-built modules
-across eight rounds. The story of how the answer changed is more useful than the
-tool.
+We are about to hand a great deal of work to autonomous software. Not one assistant
+answering one question, but *fleets* of AI agents working in parallel — each taking a
+slice of a job and building it at the same time as the others. It is the only way the
+arithmetic works: ten agents finish in roughly a tenth of the time. The obvious fear
+is that they will trip over each other, like too many hands in one engine. That fear
+turns out to be mostly misplaced, and the real failure is stranger, more common, and
+much more fixable.
 
-## The first result looked great. Then it fell apart, twice.
+I run a small lab. One of the things I build there is a tool — I call it Seasar — that
+takes an idea for a piece of software and turns it into a *build order* for a fleet of
+coding agents: which agent builds which part, how the parts are meant to fit together,
+and what has to be checked before the whole thing is trusted. Think of it as the
+general contractor for a crew of AI builders. Its entire reason to exist is to let
+many agents build one system without silently breaking each other's work — so that
+the autonomy is *safe*, not just fast.
 
-I built the same small program twice with parallel agents: once where each agent
-got a behavioral contract telling it who owns what at each seam, once with only the
-shared types. The contract version worked; the types-only version shipped a real
-bug (a secret leaked to an LLM, and the pipeline silently never committed). Win for
-contracts.
+Before putting more weight on that tool, I wanted an honest answer to a plain
+question: is any of this grounded in evidence? What does the research actually say is
+the best way to coordinate a fleet of parallel agents?
 
-Then I got skeptical of my own result and kept testing.
+I went looking, and the looking was itself the first result. There is a real and
+growing literature on getting multiple AI models to work together, and most of it is
+organized around *coordination*: give the agents richer contracts, define protocols,
+let them review one another. But two things were true at once. The field turns over in
+months, and much of what I found was written against an earlier generation of models,
+on a frontier that has since moved. And the guidance that was current was mostly
+advice-shaped — "use contracts," "add a reviewer" — without the receipts that would
+tell me whether it works, when, and by how much. I did not want to build my tool on a
+citation that was already stale, or on my own taste dressed up as a principle.
 
-- The secret-leak win turned out to be an artifact: my contract had quietly listed
-  which secret formats to redact. Remove that hint and the advantage vanished.
-- I tried the same setup on three more domains. The agents, with no contract,
-  just figured out the right design on their own every time.
-- I found one case that did break (who stages files before a git commit), and it
-  broke *more* on the smarter models, because they "knew" git's convention and
-  applied it where it didn't fit. I got excited: maybe contracts matter more at the
-  frontier, not less. Then I tried to reproduce that on two more seams and it
-  refused to replicate. The smarter models complied fine whenever I stated the
-  requirement clearly.
+So I ran the experiments myself, and I put the whole thing in a public repository as I
+went.
 
-Every round tempered the one before it. What survived was boring and robust:
-silent integration failures come from a *positive requirement nobody wrote down*
-("a commit must actually result"), and the fix is to state it, ideally as a test.
-Not contracts. Not a bigger model.
+## The setup
 
-## The punchline study
+The apparatus is deliberately small and hermetic. Each experiment is a little software
+system whose pieces are built by independent agents that see only the shared
+*interfaces* — the shapes of the parts — and never each other's code. That is exactly
+the parallel situation: everyone building to the same blueprint, nobody watching the
+seams. Then the pieces are assembled and a probe runs the whole thing end to end, to
+ask the only question that matters: does it actually *behave* correctly — not merely
+compile? About two thousand agent-built modules, across twelve rounds. I held myself to
+one rule: every result had to survive my trying to kill it. A finding I liked stayed a
+suspect until I had tried, and failed, to make it disappear.
 
-That left the question my tool's whole existence depends on: can you *detect* the
-missing requirement before the build? And specifically, is it a blind spot you can
-catch by yourself, or do you need an outside reviewer?
+## What I expected, and what actually broke
 
-I took the one seam that reliably broke and changed nothing but the prompt.
+I expected the answer to be *better contracts* — that the elaborate agreements between
+agents were what prevented collisions. The evidence retired that belief almost
+immediately. When the requirement is implied by the interfaces, capable agents simply
+derive the right design without being told. The contract was mostly redundant.
 
-- Build it normally: it produced a working commit **about 20% of the time**. The
-  rest silently did nothing.
-- Build it after asking the agent one extra thing, "before you finish, list how
-  this could silently fail when assembled," and commit-success jumped to **~96%**,
-  on every model including the smallest one.
+What actually broke things was quieter, and it had a shape I came to recognize. The
+specification would offer a knob — how many results to return at a time, how long to
+cache a value, how many times to retry a payment — and the agent would reflexively
+reach for a reasonable best practice that happened to violate something obvious but
+unstated. Give a coder a "page size" setting and they will paginate, even when the one
+place that uses it needed *everything at once*, so the final report silently
+undercounts. Give them a cache timer and they will cache, even when the value has to be
+fresh, so a flag flipped elsewhere is silently ignored for a minute. Each agent did
+something a competent engineer does every day. Each was locally right and globally
+wrong, precisely at the seam where its work met everyone else's.
 
-So the failure was never a capability gap. The agent could always do it right. It
-just didn't look until asked. A one-line nudge closed it.
+Then came the finding that reframed the whole problem. I asked the agents, separately,
+to list the ways their own module could break the finished system. They named the exact
+requirement almost every time — near a hundred percent, with two independent AI judges
+agreeing and a manual read to confirm. They *knew*. Left alone to build, they broke it
+anyway. So this was never a knowledge problem, and never a communication problem. It
+was a matter of where attention went. They did not look at the seam, because their
+attention was on their room.
 
-But here is the part I did not expect. I also scored whether the agents actually
-*named* the specific gap in their self-review. They mostly didn't. Reviewing its
-own work, an agent named the real problem **27% of the time**. A fresh agent that
-had never written the code named it **53%** of the time, roughly twice as often.
+## The fix, and its price
 
-Read those two results together and you get something genuinely strange: the nudge
-*fixed the code* far more than it *produced understanding*. The agents started
-staging files correctly while their own write-ups talked about other risks and
-never mentioned the thing they had just gotten right. The fix runs through
-attention, not comprehension. And the part that does require comprehension, saying
-out loud what could go wrong, is exactly where an agent is worst at reviewing
-itself and most helped by fresh eyes.
+If the failure is inattention, the remedy is to direct attention. One line, added to
+each agent's instructions — *before you finish, consider how this could silently fail
+once it is assembled into the whole system, and make sure it doesn't* — took a strong
+model from correct about **21%** of the time to about **82%**.
 
-## What I'm doing with it
+And it mattered that the instruction was *specific*. A generic "review your work
+carefully for bugs" helped far less — to about **44%**. Telling an agent to try harder
+is not the same as telling it where to look. Pointing it at the seam is the lever;
+general diligence is not. When I rebuilt the test as a true multi-agent pipeline —
+three separate agents, one system, assembled and tested end to end — the pattern held:
+broken every time without the nudge, and the nudge closed most of it.
 
-The honest read deflated the original pitch and pointed at a better one.
+This is not magic, and the places it fails are the whole reason the story has a second
+half. Three limits, each a reason a prompt can never be the entire answer:
 
-Preventing these silent failures is cheap, and it belongs inside the agent, not in
-a compiler: just make every builder agent consider end-to-end failure modes before
-it finishes. I'm baking that into the orchestration loop as a default.
+- **A capability floor.** The direction only helps a model strong enough to act on it.
+  The same sentence that lifts a frontier model from 21 to 82 barely moves a small one.
+- **Sticky conventions.** Some habits resist every phrasing. "Cache for speed, forget
+  that it goes stale" stayed broken about half the time even when I pointed straight
+  at it.
+- **The one I almost got wrong** — which is the most important, so I will tell it
+  plainly. I re-ran the test across other model families, and the effect vanished. The
+  tidy headline *this is specific to one model maker* was one keystroke from being
+  published. Before shipping it, I ran a single further control: the very same model
+  that showed the effect, but asked to write the code in one shot instead of as an
+  agent that reads, reasons, and builds over several steps. The effect vanished there
+  too. So the difference was never the brand of model. It was the *setting*. The fix
+  lives in the agentic posture — an agent working step by step toward an assembly — and
+  disappears when you ask for the answer in a single breath. My clean claim had been an
+  artifact of comparing two different machines. I retracted it before it left the
+  building.
 
-The thing that actually needs an outside process is the other half. Agents are bad
-at auditing their own work for what's missing, and fresh eyes roughly double the
-catch rate, and even fresh eyes miss about half. So the durable value of an
-external tool is not building, it is auditing: enumerate the integration
-requirements an agent won't surface about its own code, and emit them as runnable
-tests that catch the failure whether or not anyone reasoned about it, because, as
-this study shows, the code being correct and someone understanding why come apart.
+That last limit is exactly why a prompt cannot be the product. If the effect depends on
+the setting, degrades with model strength, and fails on the stubborn cases, then you
+cannot ship an instruction and call the result safe. You have to ship the *check*. The
+durable artifact is an **executable gate** — an automatic test, generated alongside the
+build, that catches the silent failure whether or not anyone remembered to point an
+agent's attention at the seam.
 
-That is a much smaller and much truer claim than "behavioral contracts make
-multi-agent builds better." It is also one I can stand behind, because I spent
-eight rounds trying to break it and this is what was left.
+## What the research made the method
 
-## I ran the hardening (round 9), and where I was wrong
+The experiments changed what my tool is *for*. I began believing that elaborate
+contracts between agents were what kept them from colliding. The evidence handed me
+something cheaper and sturdier. The proven method for Seasar, as of now, is three
+moves:
 
-I pre-registered a deliberate attempt to break my own conclusions: more seams, a
-weaker model, more runs, and a second judge to grade the grader. Here is what held
-and what didn't.
+1. **Keep the agents in the agentic posture the effect actually lives in** — reading
+   toward an assembly, building in steps, not generating a whole answer in one shot.
+2. **Inject one integration-directed instruction into every agent's task**, pointing
+   its attention at the seam where its work meets the rest.
+3. **Emit executable gates into the build** that verify the end-to-end behavior
+   automatically — the backstop for weak models, sticky conventions, and the runs where
+   nobody thinks to prompt.
 
-**What held, and got sharper.** The closure effect is real. On the seams that
-actually break, the one-line "consider how this could silently fail when assembled"
-prompt takes correctness from roughly 12% to 75% on the strong model. And the
-strange part resolved into something cleaner: when I *ask* the agents to list failure
-modes, they name the exact missing requirement about 100% of the time, with two
-judges agreeing 98% of the time, even though, left alone, they break. They already
-know the requirement. They just don't look unless told to. So it is not that they
-can't see the gap. It is where their attention goes. That is a tighter and truer
-claim than I started with: an attention problem, not a blindness problem.
+It is lighter than the tool I set out to build. And, unlike the tool I set out to
+build, it rests on experiments I published and actively tried to break.
 
-**What I got wrong.** Two things from the lab note did not survive more data.
+## The thesis under the specifics
 
-- "Fresh eyes catch it twice as well as self-review" evaporated. At higher n with
-  two judges, self-review and an outside reviewer both name the gap about 100% of
-  the time. The 2x gap was a small-sample, single-seam artifact. Retracted.
-- "A one-line prompt fixes it" needs two asterisks. It works far better on the
-  strong model than the weak one (about 75% versus 44% rescue), and some conventions
-  are sticky: caching staleness only half-closes even when primed. Cheap and
-  powerful, but bounded by model strength and how reflexive the bad habit is.
+There is a general lesson here, and it is not really about software. As we delegate
+more to autonomous systems, the scarce ingredient is not intelligence. These agents
+usually *know* the right answer — the core of my result is that they can name it and
+then fail to use it. What is scarce is **verification**: pointing attention at the
+place things quietly go wrong, and then checking the work instead of trusting the
+description of it. That holds for a fleet of coding agents, and it holds for the humans
+meant to supervise them. It is also why I ran this in the open and spent as much effort
+trying to disprove my own tool as to defend it — the same principle, turned on myself.
+Make the work prove itself.
 
-And an honest miss: of four new traps I built, two didn't trip at all. The agents
-just did the right thing by default. Making a coding agent reliably fall into a
-silent integration bug is harder than it sounds, which is itself worth knowing.
-
-**The one I almost got wrong.** I wanted to know if this generalizes past Claude, so
-I re-ran the whole thing on GPT-5, Grok, and the new Sonnet 5. None showed the effect.
-The headline wrote itself: *it's Claude-specific.* I didn't ship it, because I ran one
-more control — the same Opus that goes 21% to 82% in my setup, but asked in a single
-shot instead of as an agent reading files and building step by step. It went flat:
-24% to 21%. Identical prompt. The difference wasn't the model's brand; it was the
-harness. The effect lives in the agentic build posture — an agent working toward an
-assembly over several steps — and disappears when you ask for the code in one breath.
-Two consequences: a single-shot benchmark would miss this entirely, and I still don't
-know whether it crosses model families, because I can't yet run GPT-5 or Grok inside
-the same agentic harness. The "Claude-specific" claim was an artifact of comparing two
-different machines. Retracted before it left the building.
-
-**What it means.** Prevent these cheaply by directing the builder's attention with a
-prompt, and back it with executable tests for the cases the prompt misses: weaker
-models, sticky conventions, and the runs where nobody thinks to prompt. The external
-value is not fresh eyes, they are no better. It is a gate that fires whether or not
-anyone was paying attention.
+Safe autonomy will not come from smarter agents alone, or from more elaborate protocols
+between them. It will come from making their work verifiable at the seams. Verification
+is the product — for the code, and for the people relying on it.
 
 ---
 
-*Method, raw data, and every built artifact are at github.com/yiyaw-lab/seasar-research.
-Run with Claude (Opus, Sonnet, Haiku as agentic builders; Opus and Sonnet as the two
-judges), with a raw-API single-shot control adding Opus, Sonnet 5, GPT-5, and Grok.
-The mechanism ablation is n=30 per cell with Wilson confidence intervals and
-two-judge agreement; full-pipeline replication now covers four seams (pooled 0/60 →
-35/60). It is a hardened lab note / extended abstract, not yet a full paper: five
-breaking seams, an LLM (not human-validated) judge, and — the new central limit — an
-effect that lives in the agentic harness, leaving cross-family transfer untested. The
-next step is an agentic non-Claude harness to test that transfer cleanly, plus a
-human-checked judge subset.*
+*Method, raw per-trial data, and every built artifact are open at
+[github.com/yiyaw-lab/seasar-research](https://github.com/yiyaw-lab/seasar-research).
+Run with several models as agentic builders (Claude Opus, Sonnet, Haiku) and two of
+them as independent judges, plus a single-shot control across model families (Opus,
+Sonnet 5, GPT-5, Grok). The central experiment is n=30 per cell with Wilson confidence
+intervals; the multi-agent pipeline replication spans four failure seams. This is a
+hardened lab note and working paper, not yet a peer-reviewed paper: the judge is an AI
+corroborated by a manual audit rather than human-validated at scale, and — the honest
+frontier — the fix is demonstrated inside an agentic harness, which leaves transfer
+across model families genuinely untested. That is the next experiment.*
