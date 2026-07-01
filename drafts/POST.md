@@ -7,7 +7,7 @@ spot they inherited from us.*
 We are about to hand a great deal of work to autonomous software. Not one assistant
 answering one question, but fleets of AI agents working in parallel, each taking a
 slice of a job and building it at the same time as the others. It is the only way the
-arithmetic works: ten agents finish in roughly a tenth of the time. The obvious fear
+arithmetic works: many agents finish in a fraction of the time one would take. The obvious fear
 is that they will trip over each other, like too many hands in one engine. That fear
 is mostly misplaced. The real failure is stranger and more common, and once you can
 see it, more fixable.
@@ -182,8 +182,9 @@ itself, it does not count as done.
 github.com/yiyaw-lab/seasar-research. The experiments used several models as agentic
 builders (Claude Opus, Sonnet, Haiku) with two of them as independent judges, plus a
 single-response control across model families (Opus, Sonnet 5, GPT-5, Grok). The
-central experiment is n=30 per cell with Wilson confidence intervals, and the
-multi-agent pipeline replication spans four failure seams. This is a hardened lab note
+central ablation is n=30 per cell with Wilson confidence intervals; the pipeline
+replication runs n=15 per arm across four seams, and the cross-family and single-shot
+controls n=12 per cell. This is a hardened lab note
 and working paper rather than a peer-reviewed result: the judge is an AI corroborated
 by a manual audit rather than validated by humans at scale, and the fix is shown inside
 an agentic harness, which leaves transfer across model families untested. That is the
