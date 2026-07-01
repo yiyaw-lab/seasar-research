@@ -12,18 +12,20 @@ richer inter-agent *contracts* — actually prevents the failures it targets. Ac
 narrower, ending somewhere more useful, and survived a deliberate attempt to break
 it (round 9).
 
-**Headline finding** (420-build pre-registered ablation, Wilson CIs). The dominant
+**Headline finding** (pre-registered ablation, n=30/cell, Wilson CIs). The dominant
 silent-integration failure we could construct is an **attention-allocation failure,
 not a coordination problem**. Agents *know* the requirement — asked to enumerate
-failure modes they name it at ceiling (self 24/24, external 23/24; two judges, 98%
-agreement; manual audit 48/48) — but break unprompted. The fix is **directing
-attention**, and it is *specifically* integration-direction, not generic effort:
-pooled over four breaking seams a strong builder is correct **23%** at baseline,
-**45%** under a generic "review for bugs" nudge, and **83%** under "consider how this
-could silently fail when assembled" (integration vs generic CIs do not overlap). Two
-hard bounds: a **steep capability floor** (the same prompt lifts Opus 23→83% but only
-Sonnet 15→27%, Haiku 0→15%) and **sticky conventions** (a "cache for performance"
-habit resists every prompt: 5/15 even primed).
+failure modes they name it at ceiling across all four seams (self 48/48, external
+46/47; two judges ~99% agreement; manual audit 48/48) — but break unprompted. The
+fix is **directing attention**, and it is *specifically* integration-direction, not
+generic effort: pooled over four breaking seams a strong builder is correct **21%**
+at baseline, **44%** under a generic "review for bugs" nudge, and **82%** under
+"consider how this could silently fail when assembled" (integration vs generic CIs
+do not overlap). It **replicates in a full multi-agent pipeline** (3 modules, each a
+separate agent: baseline 0/15, integration 15/15). Two hard bounds: a **steep
+capability floor** (the same prompt lifts Opus 21→82% but only Sonnet 9→27%, Haiku
+0→9%) and **sticky conventions** (a "cache for performance" habit resists every
+prompt: 14/30 even primed).
 
 This reframes "multi-agent coordination tooling": **prevention is a cheap
 builder-side prompt; the durable external artifact is an executable gate** that fires
@@ -39,6 +41,7 @@ review are not the lever.
 8. **Blind-spot study** — the attention result, a self-vs-external detection asymmetry, and a prevention/detection dissociation (n=5). [findings/08-blindspot.md](findings/08-blindspot.md)
 9. **Hardening** — the core held and sharpened (attention-allocation); two round-8 sub-claims did **not** survive. [findings/09-round9.md](findings/09-round9.md)
 10. **Full-paper grid** — the mechanism ablation (integration-direction ≫ generic effort) + a steep capability floor, 5 breaking seams, CIs. [findings/10-fullpaper-grid.md](findings/10-fullpaper-grid.md)
+11. **Full-paper finish** — n=30 ablation, full multi-agent pipeline replication (0/15 → 15/15), detection generality across all seams. [findings/11-fullpaper-final.md](findings/11-fullpaper-final.md)
 
 ### Read
 - Narrative: [drafts/POST.md](drafts/POST.md)
