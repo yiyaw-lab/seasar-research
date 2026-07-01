@@ -117,6 +117,19 @@ And an honest miss: of four new traps I built, two didn't trip at all. The agent
 just did the right thing by default. Making a coding agent reliably fall into a
 silent integration bug is harder than it sounds, which is itself worth knowing.
 
+**The one I almost got wrong.** I wanted to know if this generalizes past Claude, so
+I re-ran the whole thing on GPT-5, Grok, and the new Sonnet 5. None showed the effect.
+The headline wrote itself: *it's Claude-specific.* I didn't ship it, because I ran one
+more control — the same Opus that goes 21% to 82% in my setup, but asked in a single
+shot instead of as an agent reading files and building step by step. It went flat:
+24% to 21%. Identical prompt. The difference wasn't the model's brand; it was the
+harness. The effect lives in the agentic build posture — an agent working toward an
+assembly over several steps — and disappears when you ask for the code in one breath.
+Two consequences: a single-shot benchmark would miss this entirely, and I still don't
+know whether it crosses model families, because I can't yet run GPT-5 or Grok inside
+the same agentic harness. The "Claude-specific" claim was an artifact of comparing two
+different machines. Retracted before it left the building.
+
 **What it means.** Prevent these cheaply by directing the builder's attention with a
 prompt, and back it with executable tests for the cases the prompt misses: weaker
 models, sticky conventions, and the runs where nobody thinks to prompt. The external
@@ -126,10 +139,12 @@ anyone was paying attention.
 ---
 
 *Method, raw data, and every built artifact are at github.com/yiyaw-lab/seasar-research.
-Run with Claude (Opus, Sonnet, Haiku as builders; Opus and Sonnet as the two judges).
-Round 9 used n=8 per closure cell and n=12 per detection cell, with Wilson confidence
-intervals and two-judge agreement. It is now a hardened lab note / extended abstract,
-not yet a full paper: three reliably-breaking seams, single-module isolation, and an
-LLM (not human-validated) judge are the main limits. The next step to a full paper is
-more breaking seams, n above 30, a human-checked judge subset, and an older/smaller
-model to pin the capability floor.*
+Run with Claude (Opus, Sonnet, Haiku as agentic builders; Opus and Sonnet as the two
+judges), with a raw-API single-shot control adding Opus, Sonnet 5, GPT-5, and Grok.
+The mechanism ablation is n=30 per cell with Wilson confidence intervals and
+two-judge agreement; full-pipeline replication now covers four seams (pooled 0/60 →
+35/60). It is a hardened lab note / extended abstract, not yet a full paper: five
+breaking seams, an LLM (not human-validated) judge, and — the new central limit — an
+effect that lives in the agentic harness, leaving cross-family transfer untested. The
+next step is an agentic non-Claude harness to test that transfer cleanly, plus a
+human-checked judge subset.*

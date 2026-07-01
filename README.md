@@ -8,9 +8,9 @@ Empirical studies on autonomous multi-agent software construction, from
 
 We asked whether the standard prescription for parallel multi-agent coding —
 richer inter-agent *contracts* — actually prevents the failures it targets. Across
-**nine controlled rounds (~600 agent-built modules)** the answer kept getting
-narrower, ending somewhere more useful, and survived a deliberate attempt to break
-it (round 9).
+**twelve controlled rounds (~2,000 agent-built modules)** the answer kept getting
+narrower, ending somewhere more useful, survived a deliberate attempt to break it
+(round 9), and then survived its own author trying to over-claim it (round 12).
 
 **Headline finding** (pre-registered ablation, n=30/cell, Wilson CIs). The dominant
 silent-integration failure we could construct is an **attention-allocation failure,
@@ -21,11 +21,15 @@ fix is **directing attention**, and it is *specifically* integration-direction, 
 generic effort: pooled over four breaking seams a strong builder is correct **21%**
 at baseline, **44%** under a generic "review for bugs" nudge, and **82%** under
 "consider how this could silently fail when assembled" (integration vs generic CIs
-do not overlap). It **replicates in a full multi-agent pipeline** (3 modules, each a
-separate agent: baseline 0/15, integration 15/15). Two hard bounds: a **steep
+do not overlap). It **replicates in full multi-agent pipelines** across four seams
+(each module a separate agent: pooled baseline 0/60, integration 35/60 — strong for
+pagination/debounce, weak for caching/retry). Three hard bounds: a **steep
 capability floor** (the same prompt lifts Opus 21→82% but only Sonnet 9→27%, Haiku
-0→9%) and **sticky conventions** (a "cache for performance" habit resists every
-prompt: 14/30 even primed).
+0→9%), **sticky conventions** (a "cache for performance" habit resists every prompt:
+14/30 even primed), and **apparatus-dependence** (the effect lives in the agentic
+build posture — an identical nudge delivered single-shot is flat even for Opus,
+24→21% — which bounds it to agentic settings and leaves cross-family transfer
+untested).
 
 This reframes "multi-agent coordination tooling": **prevention is a cheap
 builder-side prompt; the durable external artifact is an executable gate** that fires
@@ -42,10 +46,11 @@ review are not the lever.
 9. **Hardening** — the core held and sharpened (attention-allocation); two round-8 sub-claims did **not** survive. [findings/09-round9.md](findings/09-round9.md)
 10. **Full-paper grid** — the mechanism ablation (integration-direction ≫ generic effort) + a steep capability floor, 5 breaking seams, CIs. [findings/10-fullpaper-grid.md](findings/10-fullpaper-grid.md)
 11. **Full-paper finish** — n=30 ablation, full multi-agent pipeline replication (0/15 → 15/15), detection generality across all seams. [findings/11-fullpaper-final.md](findings/11-fullpaper-final.md)
+12. **Apparatus-dependence (a disconfirmation)** — the tempting "Claude-specific / doesn't transfer" story was an apparatus artifact: a same-model Opus control run single-shot flattens to 24→21%, so the effect is agentic-posture-dependent and cross-family transfer stays untested. Full-pipeline replication extended to all four seams. [findings/12-apparatus-dependence.md](findings/12-apparatus-dependence.md)
 
 ### Read
 - Narrative: [drafts/POST.md](drafts/POST.md)
-- Working paper / extended abstract (v2): [drafts/PREPRINT.md](drafts/PREPRINT.md)
+- Working paper / extended abstract (v5): [drafts/PREPRINT.md](drafts/PREPRINT.md)
 - Where this is headed + venues: [drafts/SUBMISSION_NOTES.md](drafts/SUBMISSION_NOTES.md)
 - Raw per-trial data: [data/](data/)
 
