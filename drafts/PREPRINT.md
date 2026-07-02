@@ -198,11 +198,23 @@ up-front enumeration of its module's integration failure modes into an executabl
 end-to-end gate should close the cases the build-time cue cannot: caching (47% under the
 cue) and the weak-model floor (Haiku 9%). If so, the durable mechanism is the gate and
 the cue is a convenience.
+   *Graded (round 13) — REFINED, partially wrong.* The gate works, but **authoring it is
+   itself apparatus-dependent**: a single-shot "write a test" call yields toothless gates
+   (Opus 1/10 naive, 3/10 directed; GPT-5 discriminates but inverts the pass label),
+   whereas agentic authoring gets teeth across all four seams (caching 60/60; pooled
+   143/150 = 95%, Wilson 0.91–0.98). So the gate is durable only *inside the agentic
+   posture* — it inherits the same apparatus-dependence as building, not a free
+   equalizer for a weak single call. See findings/13.
 
 2. **A convention-specific counter-cue beats the generic integration cue on sticky
 seams.** Caching holds at 47% under the generic cue; a cue matched to the reflex
 ("reflect the current store on every read; do not cache") should close it substantially
 further. Stickiness is a specific reflex, not general inattention.
+   *Graded (round 13) — CONFIRMED.* Counter-cue caching build **47/48 = 98%** vs generic
+   integration cue 14/30 = 47% (non-overlapping). The counter-cue converts an attention
+   problem into a stated-requirement problem, so the lever is attention-*routing*
+   (detect the sticky affordance → inject the matched cue), not a blanket nudge. See
+   findings/13.
 
 3. **Integration-targeted self-critique beats generic self-refine.** Generic effort
 (44%) underperformed the integration cue (82%); a self-critique pass aimed specifically

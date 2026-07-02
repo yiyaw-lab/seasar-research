@@ -8,9 +8,10 @@ Empirical studies on autonomous multi-agent software construction, from
 
 We asked whether the standard prescription for parallel multi-agent coding —
 richer inter-agent *contracts* — actually prevents the failures it targets. Across
-**twelve controlled rounds (~2,000 agent-built modules)** the answer kept getting
+**thirteen controlled rounds (~2,000 agent-built modules)** the answer kept getting
 narrower, ending somewhere more useful, survived a deliberate attempt to break it
-(round 9), and then survived its own author trying to over-claim it (round 12).
+(round 9), survived its own author trying to over-claim it (round 12), and then graded
+its own pre-registered predictions (round 13).
 
 **Headline finding** (pre-registered ablation, n=30/cell, Wilson CIs). The dominant
 silent-integration failure we could construct is an **attention-allocation failure,
@@ -35,7 +36,11 @@ This reframes "multi-agent coordination tooling": **prevention is a cheap
 builder-side prompt; the durable external artifact is an executable gate** that fires
 whether or not attention was directed — the backstop for weak models, sticky
 conventions, and the runs where no one thinks to prompt. Contracts and "fresh-eyes"
-review are not the lever.
+review are not the lever. Round 13 adds the catch: **authoring that gate is itself
+apparatus-dependent** — a single-shot "write a test" call yields toothless gates
+(Opus 1–3/10), while agentic authoring gets teeth across all four seams (95%). And a
+**convention-specific counter-cue closes the sticky caching seam** (47→98%) where the
+generic cue stalls at 47%.
 
 ### The arc (each round tempered the last)
 1. **Pilot** — contracts looked decisive. [findings/01-pilot.md](findings/01-pilot.md)
@@ -47,6 +52,7 @@ review are not the lever.
 10. **Full-paper grid** — the mechanism ablation (integration-direction ≫ generic effort) + a steep capability floor, 5 breaking seams, CIs. [findings/10-fullpaper-grid.md](findings/10-fullpaper-grid.md)
 11. **Full-paper finish** — n=30 ablation, full multi-agent pipeline replication (0/15 → 15/15), detection generality across all seams. [findings/11-fullpaper-final.md](findings/11-fullpaper-final.md)
 12. **Apparatus-dependence (a disconfirmation)** — the tempting "Claude-specific / doesn't transfer" story was an apparatus artifact: a same-model Opus control run single-shot flattens to 24→21%, so the effect is agentic-posture-dependent and cross-family transfer stays untested. Full-pipeline replication extended to all four seams. [findings/12-apparatus-dependence.md](findings/12-apparatus-dependence.md)
+13. **Grading the predictions** — the counter-cue prediction is confirmed (sticky caching seam 47→98%); the elicit-then-gate prediction is *refined*: the gate works, but gate-*authoring* inherits the same apparatus-dependence as building — single-shot gates are toothless (Opus 1–3/10), agentic gates get teeth across all four seams (95%, n=150). [findings/13-gate-authoring-apparatus.md](findings/13-gate-authoring-apparatus.md)
 
 ### Read
 - Narrative: [drafts/POST.md](drafts/POST.md)
