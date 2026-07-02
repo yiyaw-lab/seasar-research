@@ -161,11 +161,18 @@ attention alone never suffices.
 
 ## 8. Discussion
 
-The agentic-systems literature debates whether self-reflection helps. Our data give
+The agentic-systems literature debates whether self-reflection helps (Reflexion,
+Shinn et al. 2023; Self-Refine, Madaan et al. 2023; contra: Huang et al., ICLR 2024;
+Kamoi et al., TACL 2024). Our data give
 a sharper account: the deficit is not detection (near-ceiling when asked) nor raw
 reasoning (generic effort helps only modestly) but *attention allocation* to
 integration, which a targeted prompt fixes — bounded by a steep capability floor and
-by convention stickiness. For tooling: prevention is a builder-side,
+by convention stickiness. Two independent lines corroborate the shape: the MAST
+taxonomy of multi-agent failures (Cemri et al., NeurIPS 2025) places specification
+issues and weak task verification among its three top-level categories, and
+near-ceiling detection alongside failing deployment parallels the "knowing-doing
+gap" reported for RL-tuned agents (Schmied et al., 2025, preprint). For tooling:
+prevention is a builder-side,
 integration-directed prompt; the durable external artifact is an **executable gate**
 that fires whether or not attention was directed — the backstop for weaker models,
 sticky conventions, and runs where no one prompts. Inter-agent contracts and

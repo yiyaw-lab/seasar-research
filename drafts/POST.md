@@ -28,14 +28,23 @@ The work I found split into two camps. One holds that a model improves its own o
 when asked to reflect on it and revise; Reflexion (Shinn and colleagues, 2023) and
 Self-Refine (Madaan and colleagues, 2023) are the well-known versions. The other is
 skeptical, with results like Huang and colleagues at DeepMind arguing that models
-cannot reliably self-correct their reasoning without an outside signal. A third line,
-multi-agent debate (Du and colleagues, 2023), has several models argue toward a
-consensus answer. All of it was interesting and little of it fit my case. Most studied
-one model reasoning through one task, or a few models debating a single answer, rather
-than many agents constructing different parts of one system that then has to work as a
-whole. A fair amount of it was written against a generation of models the frontier has
-already passed. I did not want to lean on a citation aimed at a different question and
-half a generation old.
+cannot reliably self-correct their reasoning without an outside signal, a verdict a
+critical survey of the whole self-correction literature later upheld (Kamoi and
+colleagues, 2024). A third line, multi-agent debate (Du and colleagues, 2024), has
+several models argue toward a consensus answer, though careful comparisons have found
+debate no more reliable than simpler ensembling (Smit and colleagues, 2024). The
+closest to my question was a taxonomy of why multi-agent systems fail (Cemri and
+colleagues, 2025), built from more than a thousand annotated failure traces and sorted
+into specification problems, misalignment between agents, and weak verification; it
+maps where existing frameworks break rather than testing what prevents the break. And
+the frameworks that do build whole systems with fleets of role-playing agents, MetaGPT
+and ChatDev among them, grade the finished product rather than the moment a capable
+agent goes wrong at a boundary. All of it was interesting and little of it fit my
+case. Most studied one model reasoning through one task, or a few models debating a
+single answer, rather than many agents constructing different parts of one system that
+then has to work as a whole. Much of the self-correction work was also written against
+a generation of models the frontier has already passed. I did not want to lean on a
+citation aimed at a different question and half a generation old.
 
 Cognitive science, though, had a name for what the engineering literature was missing,
 which is a large part of why I went into these experiments looking for an attention
@@ -89,9 +98,12 @@ cue is enough to bring it out. It is not blindness. In the classic inattentional
 blindness studies, where a viewer misses an obvious event because attention is loaded
 elsewhere, the person genuinely does not see it. Here the agents were not blind at all;
 they could describe the gap in detail the moment they were asked to look. The knowledge
-was present and sitting idle. What was missing was the cue that would send attention to
-the seam. That reading told me the fix would not be more capability or more
-communication between agents. It would be a prompt that points.
+was present and sitting idle. Machine-learning researchers have lately met the same
+shape in their own agents and named it the knowing-doing gap: models that state the
+correct rationale nearly nine times in ten, then act against it (Schmied and
+colleagues, 2025). What was missing was the cue that would send attention to the seam.
+That reading told me the fix would not be more capability or more communication
+between agents. It would be a prompt that points.
 
 There is something worth pausing on there. Production deficiency and inattentional
 blindness were found in people, decades before any of this. The models are trained on
@@ -142,7 +154,9 @@ setting, weakens with model strength, and fails on the stubborn cases, an instru
 is not something you can ship and then call the result safe. You have to ship the
 check. The lasting part of the method is an executable gate: an automatic test,
 generated with the build, that catches the failure whether or not anyone remembered to
-prompt for it.
+prompt for it. The taxonomy work points the same way: weak verification is one of the
+three great categories of multi-agent failure, which is another way of saying the
+check is the part most often missing.
 
 ## What the research made the method
 
@@ -202,6 +216,10 @@ next experiment.*
 
 *Referenced work: Reflexion (Shinn et al., 2023); Self-Refine (Madaan et al., 2023);
 "Large Language Models Cannot Self-Correct Reasoning Yet" (Huang et al., DeepMind,
-2023); multi-agent debate (Du et al., 2023); inattentional blindness (Simons & Chabris,
+ICLR 2024); "When Can LLMs Actually Correct Their Own Mistakes?" (Kamoi et al., TACL
+2024); multi-agent debate (Du et al., ICML 2024); "Should We Be Going MAD?" (Smit et
+al., ICML 2024); "Why Do Multi-Agent LLM Systems Fail?" (Cemri et al., NeurIPS 2025);
+the knowing-doing gap (Schmied et al., 2025, preprint); MetaGPT (Hong et al., ICLR
+2024); ChatDev (Qian et al., ACL 2024); inattentional blindness (Simons & Chabris,
 1999; Mack & Rock, 1998); production deficiency in strategy use (Flavell and the
 developmental-psychology tradition).*
